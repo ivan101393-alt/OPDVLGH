@@ -24,9 +24,13 @@ To store full patient records and make them available to authorized staff:
    - Execute as: `Me`
    - Who has access: `Anyone` or `Anyone with the link`
 5. Copy the web app URL.
-6. Set the URL in `app.js` in the `SHEETS_WEB_APP_URL` constant.
-7. Set the same URL in `dashboard.js`.
+6. Open `sheet_config.js` and set `SHEETS_WEB_APP_URL` to your deployed web app URL.
+7. Make sure `app.js` and `dashboard.js` use the shared `sheet_config.js` file.
 8. Share the Google Sheet with authorized physician accounts only.
+
+## Google Sheet template
+
+A template file is included: `google_sheet_template.csv`. Import this file into Google Sheets to create the required `Bookings` sheet with the correct headers and a sample row.
 
 ## How to test locally
 
