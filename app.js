@@ -3,6 +3,8 @@ const ALLOWED_DAYS = [1, 2, 3, 5]; // Monday=1, Tuesday=2, Wednesday=3, Friday=5
 const HOLIDAYS_KEY = 'patientConsultHolidays';
 const BOOKINGS_KEY = 'patientConsultBookings';
 
+// The shared Sheets web app URL is configured in sheet_config.js
+
 const qrContainer = document.getElementById('qr-code');
 const pageUrlElement = document.getElementById('page-url');
 const form = document.getElementById('booking-form');
@@ -42,6 +44,22 @@ function saveBookings() {
   window.localStorage.setItem(BOOKINGS_KEY, JSON.stringify(bookings));
 }
 
+async function submitBookingToSheet(record) {
+  if (!SHEETS_WEB_APP_URL) return;
+
+  try {
+    await fetch(SHEETS_WEB_APP_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(record),
+    });
+  } catch (error) {
+    console.warn('Failed to submit booking to Google Sheets:', error);
+  }
+}
+
 function getFormattedUrl() {
   return window.location.href;
 }
@@ -79,6 +97,25 @@ function isHoliday(dateString) {
 
 function getDailyCount(dateString) {
   return bookings[dateString] || 0;
+}
+
+async function getDailyBookingCount(dateString) {
+  if (!SHEETS_WEB_APP_URL) {
+    return getDailyCount(dateString);
+  }
+
+  try {
+    const response = await fetch(`${SHEETS_WEB_APP_URL}?action=summary`);
+    if (!response.ok) {
+      throw new Error('Unable to fetch summary from Google Sheets');
+    }
+    const data = await response.json();
+    const dateEntry = (data.dates || []).find((item) => item.date === dateString);
+    return dateEntry ? Number(dateEntry.count) : 0;
+  } catch (error) {
+    console.warn('Sheet summary fetch failed, using local count fallback', error);
+    return getDailyCount(dateString);
+  }
 }
 
 function addBooking(dateString) {
@@ -127,8 +164,7 @@ function generateConfirmationNumber() {
   return `BK-${timestamp}-${randomSuffix}`;
 }
 
-function showTicketStub(fullName, category, consultDate) {
-  const confirmationNumber = generateConfirmationNumber();
+function showTicketStub(fullName, category, consultDate, confirmationNumber) {
   const formattedDate = parseDateFromInput(consultDate).toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
@@ -145,7 +181,7 @@ function showTicketStub(fullName, category, consultDate) {
   ticketStub.scrollIntoView({ behavior: 'smooth' });
 }
 
-function validateBooking(dateString) {
+async function validateBooking(dateString) {
   const formattedDate = formatDate(dateString);
   const selectedDate = parseDateFromInput(formattedDate);
   const dayNumber = selectedDate.getDay();
@@ -159,14 +195,15 @@ function validateBooking(dateString) {
     reason.push('Selected date is a holiday and is not available for booking.');
   }
 
-  if (getDailyCount(formattedDate) >= DAILY_MAX) {
+  const currentCount = await getDailyBookingCount(formattedDate);
+  if (currentCount >= DAILY_MAX) {
     reason.push('Daily capacity has been reached for the selected date. Please choose another date.');
   }
 
   return { formattedDate, reason };
 }
 
-form.addEventListener('submit', (event) => {
+form.addEventListener('submit', async (event) => {
   event.preventDefault();
   clearStatus();
 
@@ -176,6 +213,8 @@ form.addEventListener('submit', (event) => {
   const rank = formData.get('rank');
   const reason = formData.get('reason')?.trim();
   const consultDate = formData.get('consultDate');
+  const comorbidities = Array.from(document.querySelectorAll('input[name="comorbidity"]:checked')).map((item) => item.value);
+  const confirmationNumber = generateConfirmationNumber();
 
   if (!fullName || !age || !rank || !reason || !consultDate) {
     showStatus('Please fill in all required fields before submitting.', 'error');
@@ -189,6 +228,21 @@ form.addEventListener('submit', (event) => {
   }
 
   addBooking(formattedDate);
+
+  const bookingRecord = {
+    Timestamp: new Date().toISOString(),
+    FullName: fullName,
+    Age: age,
+    Category: rank,
+    Reason: reason,
+    Comorbidities: comorbidities.join('; '),
+    ConsultDate: formattedDate,
+    Status: 'ACCEPTED',
+    ConfirmationNumber: confirmationNumber,
+  };
+
+  submitBookingToSheet(bookingRecord);
+
   const formattedDateDisplay = parseDateFromInput(formattedDate).toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
@@ -196,7 +250,7 @@ form.addEventListener('submit', (event) => {
     day: 'numeric'
   });
   showStatus(`Booking accepted for ${formattedDateDisplay}.`, 'success');
-  showTicketStub(fullName, rank, formattedDate);
+  showTicketStub(fullName, rank, formattedDate, confirmationNumber);
   renderSummary();
   form.reset();
 });

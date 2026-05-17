@@ -1,4 +1,4 @@
-const SHEETS_WEB_APP_URL = ''; // Set this to your deployed Google Apps Script web app URL
+// The shared Sheets web app URL is configured in sheet_config.js
 
 const summaryElement = document.getElementById('dashboard-summary');
 const tableBody = document.getElementById('patient-table-body');
