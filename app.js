@@ -221,7 +221,7 @@ form.addEventListener('submit', async (event) => {
     return;
   }
 
-  const { formattedDate, reason: validationErrors } = validateBooking(consultDate);
+  const { formattedDate, reason: validationErrors } = await validateBooking(consultDate);
   if (validationErrors.length) {
     showStatus(validationErrors.join(' '), 'error');
     return;

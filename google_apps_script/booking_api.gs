@@ -13,7 +13,9 @@ const HEADERS = [
 
 function doGet(e) {
   const action = e.parameter.action || 'patients';
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  // Open the target spreadsheet by ID to avoid relying on container-bound scripts.
+  const SPREADSHEET_ID = '1bbB_DaPeMTh1hBoVtNIBSVfBrmnCgFoU_JuJy8QgCS0';
+  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
   if (!sheet) {
     return jsonResponse({ error: 'Sheet not found' }, 400);
   }
@@ -51,7 +53,9 @@ function doPost(e) {
     payload = e.parameter;
   }
 
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  // Use the same spreadsheet ID as doGet so the script can be standalone.
+  const SPREADSHEET_ID = '1bbB_DaPeMTh1hBoVtNIBSVfBrmnCgFoU_JuJy8QgCS0';
+  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
   if (!sheet) {
     return jsonResponse({ error: 'Sheet not found' }, 400);
   }
@@ -96,9 +100,6 @@ function getWeekdayLabel(dateString) {
 function jsonResponse(data, status) {
   const response = ContentService.createTextOutput(JSON.stringify(data));
   response.setMimeType(ContentService.MimeType.JSON);
-  if (status) {
-    response.setResponseCode(status);
-  }
   response.append('\n');
   return response;
 }
