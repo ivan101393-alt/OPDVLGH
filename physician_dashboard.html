@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Physician Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header>
+      <h1>Physician Dashboard</h1>
+      <p class="subtitle">View patient consult bookings, status, and full patient details from Google Sheets.</p>
+    </header>
+
+    <section class="hero-card">
+      <h2>Dashboard Access</h2>
+      <p class="note">This page reads booking records from the shared Google Sheets backend. Only authorized staff should use this page.</p>
+      <p class="note">If you do not see data, please configure the Google Sheets web app URL in <code>dashboard.js</code> and make sure the sheet is shared with authorized accounts.</p>
+    </section>
+
+    <main>
+      <section class="card summary-card">
+        <h2>Booking Summary</h2>
+        <div id="dashboard-summary">Loading summary...</div>
+      </section>
+
+      <section class="card">
+        <h2>Patient Booking List</h2>
+        <div id="dashboard-error" class="status-box error hidden"></div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Category</th>
+                <th>Consult Date</th>
+                <th>Weekday</th>
+                <th>Comorbidities</th>
+                <th>Status</th>
+                <th>Confirmation</th>
+              </tr>
+            </thead>
+            <tbody id="patient-table-body">
+              <tr><td colspan="9">Loading patient records...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
