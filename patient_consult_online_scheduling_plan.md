@@ -5,6 +5,7 @@
 - **Consultation hours:** 7:00 AM to 12:00 noon.
 - **Exclude holidays:** disable booking on holidays manually each month.
 - **Maximum patients per day:** 40 total submissions.
+- **Patient can choose schedule:** patient selects both preferred date and preferred time slot.
 
 ## 2) Platform Components
 Use these Google tools:
@@ -40,19 +41,18 @@ Recommended Form settings:
 - Turn OFF: “Limit to 1 response” unless users have Google accounts
 - Add note in description:
   - “Schedule is Monday–Wednesday and Friday only, 7:00 AM–12:00 noon, excluding holidays.”
-  - “Maximum of 40 patients per day. Once full, select another date.”
+  - “Maximum of 40 patients per day and slot limits apply. Once full, select another date/time.”
 
 ## 4) Booking Validation Logic
-Apply validation in Google Apps Script linked to the response sheet:
+Apply validation in Google Apps Script linked to the response sheet.
 
 ### Rules to enforce on each submission
 1. Reject if selected date is **Thursday, Saturday, or Sunday**.
 2. Reject if selected date is in **holiday list**.
 3. Reject if selected date already has **40 accepted patients**.
 4. Reject if selected date + preferred time slot is already full (set slot cap, e.g., 8 per hour across 5 slots).
-5. If rejected, mark status as `REJECTED` and email/update instructions to reschedule.
+5. If rejected, mark status as `REJECTED` and include rejection reason.
 6. If accepted, mark status as `ACCEPTED`.
-
 
 ## 5) Sheet Structure
 In linked Google Sheet, use:
@@ -61,6 +61,7 @@ In linked Google Sheet, use:
   - Column A: `Holiday Date` (YYYY-MM-DD)
   - Column B: `Holiday Name`
 - `Monthly Report` sheet for summary output
+- `Dry Run Log` sheet for test-cycle results
 
 Add calculated/helper columns in `Form Responses 1`:
 - `Status` (ACCEPTED/REJECTED)
@@ -85,7 +86,7 @@ Generate monthly statistics automatically:
 
 Recommended automation:
 - Create Apps Script time trigger: run every month-end (e.g., 11:55 PM on last day of month).
-- Script generates/update `Monthly Report` rows for the month.
+- Script generates/updates `Monthly Report` rows for the month.
 - Optional: auto-email CSV/PDF summary to clinic admin.
 
 ## 7) QR Code Registration Flow
@@ -113,17 +114,62 @@ Monthly:
 - Archive/export report for records and compliance.
 - Update holiday list for next month.
 
-## 10) Implementation Checklist
+## 10) Dry Run Procedure (Before Go-Live)
+Run this dry run using test data before actual patient use.
+
+### A. Pre-dry-run setup
+- Add at least 2 sample holiday dates in `Holidays` sheet.
+- Set slot capacity value in Apps Script (example: `SLOT_CAP = 8`).
+- Clear previous test responses from `Form Responses 1` (or use a copy).
+
+### B. Test scenarios (minimum)
+Submit test entries and verify expected result in `Status` and `Rejection Reason`.
+
+1. **Valid booking**
+   - Date: Monday, non-holiday
+   - Time: 8:00–9:00 AM
+   - Expected: `ACCEPTED`
+
+2. **Invalid day booking**
+   - Date: Thursday
+   - Expected: `REJECTED` (day mismatch)
+
+3. **Holiday booking**
+   - Date: listed holiday
+   - Expected: `REJECTED` (holiday)
+
+4. **Time-slot full test**
+   - Submit up to slot cap for same date+time
+   - Next submission same date+time
+   - Expected: final one `REJECTED` (full time slot)
+
+5. **Daily cap full test (40/day)**
+   - Submit 40 accepted bookings on one valid date
+   - 41st booking same date
+   - Expected: `REJECTED` (full daily capacity)
+
+6. **QR access test**
+   - Scan QR using Android and iOS
+   - Expected: form opens correctly and submits successfully
+
+### C. Dry run sign-off checklist
+- [ ] All 6 scenarios executed
+- [ ] Results match expected status/reason
+- [ ] Monthly report includes dry-run submissions correctly
+- [ ] Admin team confirms workflow readiness
+- [ ] Go-live date approved
+
+## 11) Implementation Checklist
 - [ ] Create one-page Google Form with required fields
 - [ ] Link Form to Google Sheet
-- [ ] Add `Holidays` and `Monthly Report` tabs
+- [ ] Add `Holidays`, `Monthly Report`, and `Dry Run Log` tabs
 - [ ] Add Apps Script validation for day/holiday/daily-capacity/time-slot-capacity
 - [ ] Add status columns and logic
 - [ ] Add monthly report generator
 - [ ] Generate and test QR code
-- [ ] Perform end-to-end test with at least 5 sample submissions
+- [ ] Perform dry run with at least 41+ submissions for cap validation
 
-## 11) Data Privacy and Security Notes
+## 12) Data Privacy and Security Notes
 - Avoid collecting unnecessary sensitive medical history beyond required scope.
 - Restrict Google Sheet access to authorized clinic staff only.
 - Enable 2FA on admin Google accounts.
