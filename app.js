@@ -101,7 +101,7 @@ function renderSummary() {
     const dayLabel = getDayLabel(date);
     const dailyCount = getDailyCount(date);
     totalAccepted += dailyCount;
-    return `<li><strong>${date} (${dayLabel})</strong> — ${dailyCount} patients booked</li>`;
+    return `<li><strong>Date:</strong> ${date} — <strong>Weekday:</strong> ${dayLabel} — ${dailyCount} patients booked</li>`;
   }).join('');
 
   summaryOutput.innerHTML = `
