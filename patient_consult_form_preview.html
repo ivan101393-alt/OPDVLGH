@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Consult Booking Preview</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 720px; margin: 40px auto; line-height: 1.6; }
+    label { display: block; margin-top: 20px; font-weight: bold; }
+    input, textarea, select { width: 100%; padding: 10px; margin-top: 8px; box-sizing: border-box; }
+    .note { font-size: 0.95rem; color: #555; margin-top: 4px; }
+    .button { margin-top: 24px; padding: 12px 18px; font-size: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Patient Consult Booking</h1>
+  <p>Please fill in your details and select a preferred consult date and time.</p>
+  <form>
+    <label>Full Name <span>*</span>
+      <input type="text" required placeholder="Enter full name">
+    </label>
+
+    <label>Age <span>*</span>
+      <input type="number" min="1" required placeholder="Enter age">
+    </label>
+
+    <label>Rank <span>*</span>
+      <select required>
+        <option value="">Select rank</option>
+        <option>Private</option>
+        <option>Corporal</option>
+        <option>Sergeant</option>
+        <option>Lieutenant</option>
+        <option>Captain</option>
+        <option>Major</option>
+        <option>Colonel</option>
+        <option>General</option>
+      </select>
+    </label>
+
+    <label>Reason for Consult <span>*</span>
+      <textarea rows="4" required placeholder="Describe your consult reason"></textarea>
+    </label>
+
+    <label>Comorbidity
+      <div>
+        <label><input type="checkbox"> Diabetes</label>
+        <label><input type="checkbox"> Hypertension</label>
+        <label><input type="checkbox"> Malignancy/Cancer</label>
+        <label><input type="checkbox"> PTB</label>
+        <label><input type="checkbox"> Pneumonia</label>
+        <label><input type="checkbox"> COPD</label>
+        <label><input type="checkbox"> Other</label>
+      </div>
+    </label>
+
+    <label>Preferred Consult Date <span>*</span>
+      <input type="date" required>
+      <div class="note">Available days: Monday, Tuesday, Wednesday, Friday only.</div>
+    </label>
+
+    <label>Preferred Consult Time <span>*</span>
+      <select required>
+        <option value="">Select a time slot</option>
+        <option>7:00–8:00 AM</option>
+        <option>8:00–9:00 AM</option>
+        <option>9:00–10:00 AM</option>
+        <option>10:00–11:00 AM</option>
+        <option>11:00 AM–12:00 noon</option>
+      </select>
+    </label>
+
+    <button type="submit" class="button">Submit</button>
+  </form>
+  <p class="note">This preview is a local form mock. Use the template instructions to build the actual Google Form.</p>
+</body>
+</html>
