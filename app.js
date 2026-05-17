@@ -59,13 +59,17 @@ function buildQrCode() {
   });
 }
 
+function parseDateFromInput(dateString) {
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
 function formatDate(dateString) {
-  const date = new Date(dateString + 'T00:00:00');
-  return date.toISOString().slice(0, 10);
+  return dateString;
 }
 
 function getDayLabel(dateString) {
-  const date = new Date(dateString + 'T00:00:00');
+  const date = parseDateFromInput(dateString);
   return date.toLocaleDateString(undefined, { weekday: 'long' });
 }
 
@@ -125,7 +129,7 @@ function generateConfirmationNumber() {
 
 function showTicketStub(fullName, category, consultDate) {
   const confirmationNumber = generateConfirmationNumber();
-  const formattedDate = new Date(consultDate + 'T00:00:00').toLocaleDateString('en-US', {
+  const formattedDate = parseDateFromInput(consultDate).toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -143,7 +147,7 @@ function showTicketStub(fullName, category, consultDate) {
 
 function validateBooking(dateString) {
   const formattedDate = formatDate(dateString);
-  const selectedDate = new Date(formattedDate + 'T00:00:00');
+  const selectedDate = parseDateFromInput(formattedDate);
   const dayNumber = selectedDate.getDay();
   const reason = [];
 
@@ -185,7 +189,7 @@ form.addEventListener('submit', (event) => {
   }
 
   addBooking(formattedDate);
-  const formattedDateDisplay = new Date(formattedDate + 'T00:00:00').toLocaleDateString('en-US', {
+  const formattedDateDisplay = parseDateFromInput(formattedDate).toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
