@@ -1,5 +1,4 @@
 const DAILY_MAX = 40;
-const SLOT_CAP = 8;
 const ALLOWED_DAYS = [1, 2, 3, 5]; // Monday=1, Tuesday=2, Wednesday=3, Friday=5
 const HOLIDAYS_KEY = 'patientConsultHolidays';
 const BOOKINGS_KEY = 'patientConsultBookings';
@@ -9,7 +8,6 @@ const pageUrlElement = document.getElementById('page-url');
 const form = document.getElementById('booking-form');
 const statusBox = document.getElementById('status-box');
 const summaryOutput = document.getElementById('summary-output');
-const resetButton = document.getElementById('reset-bookings');
 
 const holidays = loadHolidays();
 const bookings = loadBookings();
@@ -74,19 +72,14 @@ function isHoliday(dateString) {
 }
 
 function getDailyCount(dateString) {
-  return bookings[dateString]?.accepted || 0;
+  return bookings[dateString] || 0;
 }
 
-function getSlotCount(dateString, slot) {
-  return bookings[dateString]?.slots?.[slot] || 0;
-}
-
-function addBooking(dateString, slot) {
+function addBooking(dateString) {
   if (!bookings[dateString]) {
-    bookings[dateString] = { accepted: 0, slots: {} };
+    bookings[dateString] = 0;
   }
-  bookings[dateString].accepted += 1;
-  bookings[dateString].slots[slot] = getSlotCount(dateString, slot) + 1;
+  bookings[dateString] += 1;
   saveBookings();
 }
 
@@ -102,10 +95,7 @@ function renderSummary() {
     const dayLabel = getDayLabel(date);
     const dailyCount = getDailyCount(date);
     totalAccepted += dailyCount;
-    const slotRows = Object.entries(bookings[date].slots)
-      .map(([slot, count]) => `<li>${slot}: ${count}</li>`)
-      .join('');
-    return `<li><strong>${date} (${dayLabel})</strong> — ${dailyCount} accepted<ul>${slotRows}</ul></li>`;
+    return `<li><strong>${date} (${dayLabel})</strong> — ${dailyCount} patients booked</li>`;
   }).join('');
 
   summaryOutput.innerHTML = `
@@ -125,7 +115,7 @@ function clearStatus() {
   statusBox.className = 'status-box hidden';
 }
 
-function validateBooking(dateString, timeSlot) {
+function validateBooking(dateString) {
   const formattedDate = formatDate(dateString);
   const selectedDate = new Date(formattedDate + 'T00:00:00');
   const dayNumber = selectedDate.getDay();
@@ -143,18 +133,7 @@ function validateBooking(dateString, timeSlot) {
     reason.push('Daily capacity has been reached for the selected date. Please choose another date.');
   }
 
-  if (getSlotCount(formattedDate, timeSlot) >= SLOT_CAP) {
-    reason.push('This time slot is full for the selected date. Please choose another time.');
-  }
-
   return { formattedDate, reason };
-}
-
-function resetBookings() {
-  window.localStorage.removeItem(BOOKINGS_KEY);
-  Object.keys(bookings).forEach((key) => delete bookings[key]);
-  renderSummary();
-  showStatus('Stored bookings have been reset.', 'success');
 }
 
 form.addEventListener('submit', (event) => {
@@ -167,29 +146,22 @@ form.addEventListener('submit', (event) => {
   const rank = formData.get('rank');
   const reason = formData.get('reason')?.trim();
   const consultDate = formData.get('consultDate');
-  const consultTime = formData.get('consultTime');
 
-  if (!fullName || !age || !rank || !reason || !consultDate || !consultTime) {
+  if (!fullName || !age || !rank || !reason || !consultDate) {
     showStatus('Please fill in all required fields before submitting.', 'error');
     return;
   }
 
-  const { formattedDate, reason: validationErrors } = validateBooking(consultDate, consultTime);
+  const { formattedDate, reason: validationErrors } = validateBooking(consultDate);
   if (validationErrors.length) {
     showStatus(validationErrors.join(' '), 'error');
     return;
   }
 
-  addBooking(formattedDate, consultTime);
-  showStatus(`Booking accepted for ${formattedDate} at ${consultTime}.`, 'success');
+  addBooking(formattedDate);
+  showStatus(`Booking accepted for ${formattedDate}.`, 'success');
   renderSummary();
   form.reset();
-});
-
-resetButton.addEventListener('click', () => {
-  if (window.confirm('Reset all stored booking data? This cannot be undone.')) {
-    resetBookings();
-  }
 });
 
 buildQrCode();

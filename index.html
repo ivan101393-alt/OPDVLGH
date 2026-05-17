@@ -52,15 +52,14 @@
           <div class="field-row">
             <label for="rank">Rank <span>*</span></label>
             <select id="rank" name="rank" required>
-              <option value="">Select rank</option>
-              <option>Private</option>
-              <option>Corporal</option>
-              <option>Sergeant</option>
-              <option>Lieutenant</option>
-              <option>Captain</option>
-              <option>Major</option>
-              <option>Colonel</option>
-              <option>General</option>
+              <option value="">Select category</option>
+              <option>Military (Officer)</option>
+              <option>Military (Enlisted)</option>
+              <option>CHR</option>
+              <option>Dependents</option>
+              <option>OCS</option>
+              <option>Cadet</option>
+              <option>Candidate Soldier</option>
             </select>
           </div>
 
@@ -85,19 +84,7 @@
           <div class="field-row">
             <label for="consult-date">Preferred Consult Date <span>*</span></label>
             <input id="consult-date" name="consultDate" type="date" required />
-            <p class="note">Allowed: Monday, Tuesday, Wednesday, Friday only.</p>
-          </div>
-
-          <div class="field-row">
-            <label for="consult-time">Preferred Consult Time <span>*</span></label>
-            <select id="consult-time" name="consultTime" required>
-              <option value="">Select a time slot</option>
-              <option>7:00–8:00 AM</option>
-              <option>8:00–9:00 AM</option>
-              <option>9:00–10:00 AM</option>
-              <option>10:00–11:00 AM</option>
-              <option>11:00 AM–12:00 noon</option>
-            </select>
+            <p class="note">Allowed: Monday, Tuesday, Wednesday, Friday only. Maximum 40 patients per day.</p>
           </div>
 
           <button type="submit" class="primary-button">Submit booking</button>
@@ -109,7 +96,6 @@
       <section class="card summary-card">
         <h2>Current Booking Summary</h2>
         <div id="summary-output"></div>
-        <button id="reset-bookings" class="secondary-button">Reset stored bookings</button>
       </section>
     </main>
   </div>
