@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patient Consult Booking Platform</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-Bka9VFy7jv0z2yS5tDiaujjQyzAijdvj1r0a3oBhaPBezMWP9/vsG8PRuVeqTsz2ylX8z0+z64f7GX8d8jae8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+  <div class="page-shell">
+    <header>
+      <h1>Patient Consult Booking Platform</h1>
+      <p class="subtitle">A static online booking form with QR code generation and client-side validation.</p>
+    </header>
+
+    <section class="hero-grid">
+      <div class="hero-card">
+        <h2>Scan to open</h2>
+        <div id="qr-code" class="qr-box" aria-label="QR code for this booking page"></div>
+        <p class="note">Scan this QR code with your phone to open the booking form directly.</p>
+        <p class="note">If scanning is not available, open:</p>
+        <code id="page-url"></code>
+      </div>
+
+      <div class="hero-card">
+        <h2>How it works</h2>
+        <ul>
+          <li>Only Monday, Tuesday, Wednesday, and Friday are accepted.</li>
+          <li>Consult hours are 7:00 AM to 12:00 noon.</li>
+          <li>Daily limit: 40 accepted bookings.</li>
+          <li>Time slot limit: 8 bookings per slot.</li>
+          <li>Holidays are blocked automatically.</li>
+        </ul>
+      </div>
+    </section>
+
+    <main>
+      <section class="card form-card">
+        <h2>Patient Booking Form</h2>
+        <form id="booking-form">
+          <div class="field-row">
+            <label for="full-name">Full Name <span>*</span></label>
+            <input id="full-name" name="fullName" type="text" required placeholder="Enter full name" />
+          </div>
+
+          <div class="field-row">
+            <label for="age">Age <span>*</span></label>
+            <input id="age" name="age" type="number" min="1" required placeholder="Enter age" />
+          </div>
+
+          <div class="field-row">
+            <label for="rank">Rank <span>*</span></label>
+            <select id="rank" name="rank" required>
+              <option value="">Select rank</option>
+              <option>Private</option>
+              <option>Corporal</option>
+              <option>Sergeant</option>
+              <option>Lieutenant</option>
+              <option>Captain</option>
+              <option>Major</option>
+              <option>Colonel</option>
+              <option>General</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <label for="reason">Reason for Consult <span>*</span></label>
+            <textarea id="reason" name="reason" rows="4" required placeholder="Describe your consult reason"></textarea>
+          </div>
+
+          <div class="field-row">
+            <label>Comorbidity</label>
+            <div class="checkbox-grid">
+              <label><input type="checkbox" name="comorbidity" value="Diabetes" /> Diabetes</label>
+              <label><input type="checkbox" name="comorbidity" value="Hypertension" /> Hypertension</label>
+              <label><input type="checkbox" name="comorbidity" value="Malignancy/Cancer" /> Malignancy/Cancer</label>
+              <label><input type="checkbox" name="comorbidity" value="PTB" /> PTB</label>
+              <label><input type="checkbox" name="comorbidity" value="Pneumonia" /> Pneumonia</label>
+              <label><input type="checkbox" name="comorbidity" value="COPD" /> COPD</label>
+              <label><input type="checkbox" name="comorbidity" value="Other" /> Other</label>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <label for="consult-date">Preferred Consult Date <span>*</span></label>
+            <input id="consult-date" name="consultDate" type="date" required />
+            <p class="note">Allowed: Monday, Tuesday, Wednesday, Friday only.</p>
+          </div>
+
+          <div class="field-row">
+            <label for="consult-time">Preferred Consult Time <span>*</span></label>
+            <select id="consult-time" name="consultTime" required>
+              <option value="">Select a time slot</option>
+              <option>7:00–8:00 AM</option>
+              <option>8:00–9:00 AM</option>
+              <option>9:00–10:00 AM</option>
+              <option>10:00–11:00 AM</option>
+              <option>11:00 AM–12:00 noon</option>
+            </select>
+          </div>
+
+          <button type="submit" class="primary-button">Submit booking</button>
+        </form>
+
+        <div id="status-box" class="status-box hidden"></div>
+      </section>
+
+      <section class="card summary-card">
+        <h2>Current Booking Summary</h2>
+        <div id="summary-output"></div>
+        <button id="reset-bookings" class="secondary-button">Reset stored bookings</button>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
