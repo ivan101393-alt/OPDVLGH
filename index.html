@@ -77,7 +77,8 @@
               <label><input type="checkbox" name="comorbidity" value="PTB" /> PTB</label>
               <label><input type="checkbox" name="comorbidity" value="Pneumonia" /> Pneumonia</label>
               <label><input type="checkbox" name="comorbidity" value="COPD" /> COPD</label>
-              <label><input type="checkbox" name="comorbidity" value="Other" /> Other</label>
+              <label><input type="checkbox" name="comorbidity" value="Asthma" /> Asthma</label>
+              <label><input type="checkbox" name="comorbidity" value="Others" /> Others</label>
             </div>
           </div>
 
@@ -91,6 +92,19 @@
         </form>
 
         <div id="status-box" class="status-box hidden"></div>
+        
+        <div id="ticket-stub" class="ticket-stub hidden">
+          <div class="ticket-header">✓ BOOKING CONFIRMED</div>
+          <div class="ticket-content">
+            <p><strong>Ticket Confirmation #</strong><br><span id="ticket-number"></span></p>
+            <p><strong>Patient Name</strong><br><span id="ticket-name"></span></p>
+            <p><strong>Category</strong><br><span id="ticket-category"></span></p>
+            <p><strong>Consult Date</strong><br><span id="ticket-date"></span></p>
+            <p><strong>Time</strong><br><span id="ticket-time">7:00 AM – 12:00 noon</span></p>
+            <p class="ticket-note">Please save this ticket and present it on your consult date.</p>
+          </div>
+          <button id="print-ticket" class="secondary-button">Print Ticket</button>
+        </div>
       </section>
 
       <section class="card summary-card">

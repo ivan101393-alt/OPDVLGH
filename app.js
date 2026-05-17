@@ -8,6 +8,8 @@ const pageUrlElement = document.getElementById('page-url');
 const form = document.getElementById('booking-form');
 const statusBox = document.getElementById('status-box');
 const summaryOutput = document.getElementById('summary-output');
+const ticketStub = document.getElementById('ticket-stub');
+const printButton = document.getElementById('print-ticket');
 
 const holidays = loadHolidays();
 const bookings = loadBookings();
@@ -115,6 +117,30 @@ function clearStatus() {
   statusBox.className = 'status-box hidden';
 }
 
+function generateConfirmationNumber() {
+  const timestamp = Date.now();
+  const randomSuffix = Math.random().toString(36).substr(2, 9).toUpperCase();
+  return `BK-${timestamp}-${randomSuffix}`;
+}
+
+function showTicketStub(fullName, category, consultDate) {
+  const confirmationNumber = generateConfirmationNumber();
+  const formattedDate = new Date(consultDate + 'T00:00:00').toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+  
+  document.getElementById('ticket-number').textContent = confirmationNumber;
+  document.getElementById('ticket-name').textContent = fullName;
+  document.getElementById('ticket-category').textContent = category;
+  document.getElementById('ticket-date').textContent = formattedDate;
+  
+  ticketStub.classList.remove('hidden');
+  ticketStub.scrollIntoView({ behavior: 'smooth' });
+}
+
 function validateBooking(dateString) {
   const formattedDate = formatDate(dateString);
   const selectedDate = new Date(formattedDate + 'T00:00:00');
@@ -159,9 +185,20 @@ form.addEventListener('submit', (event) => {
   }
 
   addBooking(formattedDate);
-  showStatus(`Booking accepted for ${formattedDate}.`, 'success');
+  const formattedDateDisplay = new Date(formattedDate + 'T00:00:00').toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+  showStatus(`Booking accepted for ${formattedDateDisplay}.`, 'success');
+  showTicketStub(fullName, rank, formattedDate);
   renderSummary();
   form.reset();
+});
+
+printButton.addEventListener('click', () => {
+  window.print();
 });
 
 buildQrCode();
